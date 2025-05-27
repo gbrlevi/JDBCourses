@@ -11,7 +11,7 @@ public class Avaliacao {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "nota", precision = 4, scale = 2)
+    @Column(name = "nota")
     private Double nota;
 
     @Column(name = "feedback", length = 300)
