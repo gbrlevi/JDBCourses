@@ -1,7 +1,7 @@
 package com.example.cursosonline.Controller;
 
-import com.example.cursosonline.DAO.AlunoDAO;
-import com.example.cursosonline.Domain.Aluno;
+import com.example.cursosonline.DAO.InstrutorDAO;
+import com.example.cursosonline.Domain.Instrutor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,29 +10,29 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/alunos")
+@RequestMapping("/api/instrutores")
 @CrossOrigin(origins = "*")
-public class AlunoController {
+public class InstrutorController {
 
     @Autowired
-    private AlunoDAO alunoDAO;
+    private InstrutorDAO instrutorDAO;
 
     @PostMapping
-    public ResponseEntity<Aluno> createAluno(@RequestBody Aluno aluno) {
+    public ResponseEntity<Instrutor> createInstrutor(@RequestBody Instrutor instrutor) {
         try {
-            alunoDAO.save(aluno);
-            return new ResponseEntity<>(aluno, HttpStatus.CREATED);
+            instrutorDAO.save(instrutor);
+            return new ResponseEntity<>(instrutor, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Aluno> getAlunoById(@PathVariable Long id) {
+    public ResponseEntity<Instrutor> getInstrutorById(@PathVariable Long id) {
         try {
-            Aluno aluno = alunoDAO.findById(id);
-            if (aluno != null) {
-                return new ResponseEntity<>(aluno, HttpStatus.OK);
+            Instrutor instrutor = instrutorDAO.findById(id);
+            if (instrutor != null) {
+                return new ResponseEntity<>(instrutor, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
@@ -42,23 +42,23 @@ public class AlunoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Aluno>> getAllAlunos() {
+    public ResponseEntity<List<Instrutor>> getAllInstrutores() {
         try {
-            List<Aluno> alunos = alunoDAO.findAll();
-            return new ResponseEntity<>(alunos, HttpStatus.OK);
+            List<Instrutor> instrutores = instrutorDAO.findAll();
+            return new ResponseEntity<>(instrutores, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Aluno> updateAluno(@PathVariable Long id, @RequestBody Aluno aluno) {
+    public ResponseEntity<Instrutor> updateInstrutor(@PathVariable Long id, @RequestBody Instrutor instrutor) {
         try {
-            Aluno existingAluno = alunoDAO.findById(id);
-            if (existingAluno != null) {
-                aluno.setId(id);
-                alunoDAO.update(aluno);
-                return new ResponseEntity<>(aluno, HttpStatus.OK);
+            Instrutor existingInstrutor = instrutorDAO.findById(id);
+            if (existingInstrutor != null) {
+                instrutor.setId(id);
+                instrutorDAO.update(instrutor);
+                return new ResponseEntity<>(instrutor, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
@@ -68,11 +68,11 @@ public class AlunoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteAluno(@PathVariable Long id) {
+    public ResponseEntity<HttpStatus> deleteInstrutor(@PathVariable Long id) {
         try {
-            Aluno existingAluno = alunoDAO.findById(id);
-            if (existingAluno != null) {
-                alunoDAO.delete(id);
+            Instrutor existingInstrutor = instrutorDAO.findById(id);
+            if (existingInstrutor != null) {
+                instrutorDAO.delete(id);
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

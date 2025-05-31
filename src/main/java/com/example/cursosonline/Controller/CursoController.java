@@ -1,7 +1,7 @@
 package com.example.cursosonline.Controller;
 
-import com.example.cursosonline.DAO.AlunoDAO;
-import com.example.cursosonline.Domain.Aluno;
+import com.example.cursosonline.DAO.CursoDAO;
+import com.example.cursosonline.Domain.Curso;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -10,29 +10,29 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/alunos")
+@RequestMapping("/api/cursos")
 @CrossOrigin(origins = "*")
-public class AlunoController {
+public class CursoController {
 
     @Autowired
-    private AlunoDAO alunoDAO;
+    private CursoDAO cursoDAO;
 
     @PostMapping
-    public ResponseEntity<Aluno> createAluno(@RequestBody Aluno aluno) {
+    public ResponseEntity<Curso> createCurso(@RequestBody Curso curso) {
         try {
-            alunoDAO.save(aluno);
-            return new ResponseEntity<>(aluno, HttpStatus.CREATED);
+            cursoDAO.save(curso);
+            return new ResponseEntity<>(curso, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Aluno> getAlunoById(@PathVariable Long id) {
+    public ResponseEntity<Curso> getCursoById(@PathVariable Long id) {
         try {
-            Aluno aluno = alunoDAO.findById(id);
-            if (aluno != null) {
-                return new ResponseEntity<>(aluno, HttpStatus.OK);
+            Curso curso = cursoDAO.findById(id);
+            if (curso != null) {
+                return new ResponseEntity<>(curso, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
@@ -42,23 +42,23 @@ public class AlunoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Aluno>> getAllAlunos() {
+    public ResponseEntity<List<Curso>> getAllCursos() {
         try {
-            List<Aluno> alunos = alunoDAO.findAll();
-            return new ResponseEntity<>(alunos, HttpStatus.OK);
+            List<Curso> cursos = cursoDAO.findAll();
+            return new ResponseEntity<>(cursos, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Aluno> updateAluno(@PathVariable Long id, @RequestBody Aluno aluno) {
+    public ResponseEntity<Curso> updateCurso(@PathVariable Long id, @RequestBody Curso curso) {
         try {
-            Aluno existingAluno = alunoDAO.findById(id);
-            if (existingAluno != null) {
-                aluno.setId(id);
-                alunoDAO.update(aluno);
-                return new ResponseEntity<>(aluno, HttpStatus.OK);
+            Curso existingCurso = cursoDAO.findById(id);
+            if (existingCurso != null) {
+                curso.setId(id);
+                cursoDAO.update(curso);
+                return new ResponseEntity<>(curso, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
@@ -68,11 +68,11 @@ public class AlunoController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> deleteAluno(@PathVariable Long id) {
+    public ResponseEntity<HttpStatus> deleteCurso(@PathVariable Long id) {
         try {
-            Aluno existingAluno = alunoDAO.findById(id);
-            if (existingAluno != null) {
-                alunoDAO.delete(id);
+            Curso existingCurso = cursoDAO.findById(id);
+            if (existingCurso != null) {
+                cursoDAO.delete(id);
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
