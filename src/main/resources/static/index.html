@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JDBCourse - Sistema de Gerenciamento de Cursos</title>
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="app-container">
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h1>JDBCourse</h1>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="index.html" class="active"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="pages/cursos.html"><i class="fas fa-book"></i> Cursos</a></li>
+            <li><a href="pages/modulos.html"><i class="fas fa-layer-group"></i> Módulos</a></li>
+            <li><a href="pages/aulas.html"><i class="fas fa-chalkboard-teacher"></i> Aulas</a></li>
+            <li><a href="pages/alunos.html"><i class="fas fa-user-graduate"></i> Alunos</a></li>
+            <li><a href="pages/instrutores.html"><i class="fas fa-user-tie"></i> Instrutores</a></li>
+            <li><a href="pages/matriculas.html"><i class="fas fa-clipboard-list"></i> Matrículas</a></li>
+            <li><a href="pages/avaliacoes.html"><i class="fas fa-star"></i> Avaliações</a></li>
+            <li><a href="pages/certificados.html"><i class="fas fa-certificate"></i> Certificados</a></li>
+        </ul>
+    </nav>
+    <main class="content">
+        <header class="content-header">
+        </header>
+        <div class="content-body">
+            <h2>Dashboard</h2>
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-user-graduate"></i></div>
+                    <div class="stat-info">
+                        <h3>Alunos</h3>
+                        <p id="total-alunos">Carregando...</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-book"></i></div>
+                    <div class="stat-info">
+                        <h3>Cursos</h3>
+                        <p id="total-cursos">Carregando...</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
+                    <div class="stat-info">
+                        <h3>Instrutores</h3>
+                        <p id="total-instrutores">Carregando...</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-clipboard-list"></i></div>
+                    <div class="stat-info">
+                        <h3>Matrículas</h3>
+                        <p id="total-matriculas">Carregando...</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-star"></i></div>
+                    <div class="stat-info">
+                        <h3>Avaliações</h3>
+                        <p id="total-avaliacoes">Carregando...</p>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-recent">
+                <div class="recent-section">
+                    <h3>Cursos Recentes</h3>
+                    <div class="table-container">
+                        <table id="recent-cursos">
+                            <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Detalhes</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td colspan="2">Carregando...</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="recent-section">
+                    <h3>Avaliações Recentes</h3>
+                    <div class="table-container">
+                        <table id="recent-avaliacoes">
+                            <thead>
+                            <tr>
+                                <th>Aluno</th>
+                                <th>Curso</th>
+                                <th>Nota</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td colspan="3">Carregando...</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="recent-section">
+                    <h3>Alunos Recentes</h3>
+                    <div class="table-container">
+                        <table id="recent-alunos">
+                            <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td colspan="2">Carregando...</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="recent-section">
+                    <h3>Instrutores Recentes</h3>
+                    <div class="table-container">
+                        <table id="recent-instrutores">
+                            <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td colspan="2">Carregando...</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<div id="notification" class="notification"></div>
+<div id="modal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <div id="modal-content"></div>
+    </div>
+</div>
+<script src="js/api.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/dashboard.js"></script>
+</body>
+</html>

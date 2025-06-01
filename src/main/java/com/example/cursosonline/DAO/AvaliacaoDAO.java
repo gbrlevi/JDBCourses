@@ -57,6 +57,24 @@ public class AvaliacaoDAO {
         return avaliacao;
     }
 
+    public List<Avaliacao> findAll() {
+        String sql = "SELECT * FROM Avaliacao";
+        List<Avaliacao> avaliacoes = new ArrayList<>();
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                avaliacoes.add(createAvaliacao(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return avaliacoes;
+    }
+
     public List<Avaliacao> findByAlunoId(Long alunoId) {
         String sql = "SELECT * FROM Avaliacao WHERE aluno_id = ?";
         List<Avaliacao> avaliacoes = new ArrayList<>();

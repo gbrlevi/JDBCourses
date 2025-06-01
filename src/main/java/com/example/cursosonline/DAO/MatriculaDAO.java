@@ -101,6 +101,24 @@ public class MatriculaDAO {
         return matriculas;
     }
 
+    public List<Matricula> findAll() {
+        String sql = "SELECT * FROM Matricula";
+        List<Matricula> matriculas = new ArrayList<>();
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                matriculas.add(createMatricula(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return matriculas;
+    }
+
     public void update(Matricula matricula) {
         String query = "UPDATE Matricula SET aluno_id = ?, curso_id = ?, data_matricula = ?, ativo = ? WHERE id = ?";
 

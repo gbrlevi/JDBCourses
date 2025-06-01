@@ -56,6 +56,24 @@ public class CertificadoDAO {
         return certificado;
     }
 
+    public List<Certificado> findAll() {
+        String sql = "SELECT * FROM Certificado";
+        List<Certificado> certificados = new ArrayList<>();
+
+        try (Connection conn = ConnectionFactory.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                certificados.add(createCertificado(rs));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return certificados;
+    }
+
     public List<Certificado> findByAlunoId(Long alunoId) {
         String sql = "SELECT * FROM Certificado WHERE aluno_id = ?";
         List<Certificado> certificados = new ArrayList<>();

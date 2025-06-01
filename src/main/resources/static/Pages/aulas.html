@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aulas - JDBCourse</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="app-container">
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h1>JDBCourse</h1>
+        </div>
+        <ul class="sidebar-menu">
+            <li><a href="../index.html"><i class="fas fa-home"></i> Dashboard</a></li>
+            <li><a href="cursos.html"><i class="fas fa-book"></i> Cursos</a></li>
+            <li><a href="modulos.html"><i class="fas fa-layer-group"></i> Módulos</a></li>
+            <li><a href="aulas.html" class="active"><i class="fas fa-chalkboard-teacher"></i> Aulas</a></li>
+            <li><a href="alunos.html"><i class="fas fa-user-graduate"></i> Alunos</a></li>
+            <li><a href="instrutores.html"><i class="fas fa-user-tie"></i> Instrutores</a></li>
+            <li><a href="matriculas.html"><i class="fas fa-clipboard-list"></i> Matrículas</a></li>
+            <li><a href="avaliacoes.html"><i class="fas fa-star"></i> Avaliações</a></li>
+            <li><a href="certificados.html"><i class="fas fa-certificate"></i> Certificados</a></li>
+        </ul>
+    </nav>
+    <main class="content">
+        <header class="content-header">
+            <div class="header-search">
+                <input type="text" id="search-aulas-input" placeholder="Pesquisar aulas por título...">
+                <button id="search-aulas-button"><i class="fas fa-search"></i></button>
+            </div>
+            <div class="header-user">
+                <span>Admin</span>
+                <img src="https://via.placeholder.com/40" alt="User Avatar">
+            </div>
+        </header>
+        <div class="content-body">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-title">Gerenciamento de Aulas</h2>
+                    <button id="btn-new-aula" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nova Aula
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table id="aulas-table">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Título</th>
+                            <th>Duração</th>
+                            <th>Ordem</th>
+                            <th>Módulo Associado</th>
+                            <th>Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td colspan="6">Carregando aulas...</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+<div id="notification" class="notification"></div>
+<div id="modal" class="modal">
+    <div class="modal-content"> <span class="close-modal">&times;</span>
+        <div id="modal-content">
+        </div>
+    </div>
+</div>
+<script src="../js/api.js"></script>
+<script src="../js/utils.js"></script>
+<script src="../js/aulas.js"></script>
+</body>
+</html>

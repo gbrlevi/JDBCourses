@@ -41,6 +41,20 @@ public class MatriculaController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<List<Matricula>> getAllMatriculas() {
+        try {
+            List<Matricula> matriculas = matriculaDAO.findAll();
+            if (matriculas.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(matriculas, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/aluno/{alunoId}")
     public ResponseEntity<List<Matricula>> getMatriculasByAlunoId(@PathVariable Long alunoId) {
         try {

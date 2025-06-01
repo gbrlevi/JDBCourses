@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -20,9 +21,11 @@ public class AlunoController {
     @PostMapping
     public ResponseEntity<Aluno> createAluno(@RequestBody Aluno aluno) {
         try {
+            aluno.setDataCadastro(new Date());
             alunoDAO.save(aluno);
             return new ResponseEntity<>(aluno, HttpStatus.CREATED);
         } catch (Exception e) {
+            e.printStackTrace();
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -57,8 +60,14 @@ public class AlunoController {
             Aluno existingAluno = alunoDAO.findById(id);
             if (existingAluno != null) {
                 aluno.setId(id);
-                alunoDAO.update(aluno);
-                return new ResponseEntity<>(aluno, HttpStatus.OK);
+                try {
+                    aluno.setDataCadastro(new Date());
+                    alunoDAO.update(aluno);
+                    return new ResponseEntity<>(aluno, HttpStatus.CREATED);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+                }
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

@@ -41,6 +41,20 @@ public class AvaliacaoController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<List<Avaliacao>> getAllAvaliacoes() {
+        try {
+            List<Avaliacao> avaliacoes = avaliacaoDAO.findAll();
+            if (avaliacoes.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(avaliacoes, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/aluno/{alunoId}")
     public ResponseEntity<List<Avaliacao>> getAvaliacoesByAlunoId(@PathVariable Long alunoId) {
         try {

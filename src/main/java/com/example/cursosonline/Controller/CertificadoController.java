@@ -41,6 +41,20 @@ public class CertificadoController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<List<Certificado>> getAllCertificados() {
+        try {
+            List<Certificado> certificados = certificadoDAO.findAll();
+            if (certificados.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(certificados, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     @GetMapping("/aluno/{alunoId}")
     public ResponseEntity<List<Certificado>> getCertificadosByAlunoId(@PathVariable Long alunoId) {
         try {
