@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -20,6 +21,7 @@ public class InstrutorController {
     @PostMapping
     public ResponseEntity<Instrutor> createInstrutor(@RequestBody Instrutor instrutor) {
         try {
+            instrutor.setDataCadastro(new Date());
             instrutorDAO.save(instrutor);
             return new ResponseEntity<>(instrutor, HttpStatus.CREATED);
         } catch (Exception e) {
