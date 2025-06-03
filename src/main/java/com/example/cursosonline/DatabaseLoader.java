@@ -3,8 +3,10 @@ package com.example.cursosonline;
 import com.example.cursosonline.DAO.*;
 import com.example.cursosonline.Domain.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 public class DatabaseLoader {
     public static void main(String[] args) {
@@ -17,137 +19,189 @@ public class DatabaseLoader {
         CertificadoDAO certificadoDAO = new CertificadoDAO();
         AvaliacaoDAO avaliacaoDAO = new AvaliacaoDAO();
         AulaDAO aulaDAO = new AulaDAO();
+        CursoInstrutorDAO cursoInstrutorDAO = new CursoInstrutorDAO();
+        CursoModuloDAO cursoModuloDAO = new CursoModuloDAO();
 
-        System.out.println("==== TESTANDO CRUD COMPLETO ====");
+        Random random = new Random();
 
-        // ===================== ALUNO =====================
-        Aluno aluno = new Aluno();
-        aluno.setNome("Maria Silva");
-        aluno.setCpf("12345678901");
-        aluno.setSenha("senha123");
-        aluno.setDataCadastro(new Date());
-        alunoDAO.save(aluno);
-        System.out.println("Aluno salvo: " + aluno.getId());
+        System.out.println("==== INSERINDO 3 EXEMPLOS DE DADOS COM NOMES REAIS ====");
 
-        // ===================== INSTRUTOR =====================
-        Instrutor instrutor = new Instrutor();
-        instrutor.setNome("João Paulo");
-        instrutor.setCpf("98765432100");
-        instrutor.setSenha("instrutor123");
-        instrutor.setDataCadastro(new Date());
-        instrutorDAO.save(instrutor);
-        System.out.println("Instrutor salvo: " + instrutor.getId());
+        // Listas para armazenar os objetos criados
+        List<Aluno> alunosCriados = new ArrayList<>();
+        List<Instrutor> instrutoresCriados = new ArrayList<>();
+        List<Modulo> modulosCriados = new ArrayList<>();
+        List<Curso> cursosCriados = new ArrayList<>();
+        // List<Aula> aulasCriadas = new ArrayList<>(); // Menos crucial ter a lista global de aulas aqui
 
-        // ===================== MODULO =====================
-        Modulo modulo = new Modulo();
-        modulo.setConteudo("Programação Java");
-        modulo.setCargaHoraria(10);
-        modulo.setQtdAulas(5);
-        moduloDAO.save(modulo);
-        System.out.println("Modulo salvo: " + modulo.getId());
+        // ===================== 3 ALUNOS =====================
+        System.out.println("\n--- Criando Alunos ---");
+        String[] nomesAlunos = {"Ana Carolina Lima", "Bruno Costa Alves", "Camila Fernandes Dias"};
+        String[] cpfsAlunos = {"11122233301", "11122233302", "11122233303"};
+        for (int i = 0; i < 3; i++) {
+            Aluno aluno = new Aluno();
+            aluno.setNome(nomesAlunos[i]);
+            aluno.setCpf(cpfsAlunos[i]);
+            aluno.setSenha("senha" + (i + 1) + nomesAlunos[i].substring(0, 3).toLowerCase());
+            aluno.setDataCadastro(new Date());
+            alunoDAO.save(aluno);
+            alunosCriados.add(aluno);
+            System.out.println("Aluno salvo: " + aluno.getNome() + " (ID: " + aluno.getId() + ")");
+        }
 
-        // ===================== AULA =====================
-        Aula aula = new Aula();
-        aula.setTitulo("Introdução ao Java");
-        aula.setDuracao("00:30:00");
-        aula.setOrdem(1);
-        aula.setUrl("http://link-da-aula.com/intro-java");
-        aula.setModulo(modulo);
-        aulaDAO.save(aula);
-        System.out.println("Aula salva: " + aula.getId());
+        // ===================== 3 INSTRUTORES =====================
+        System.out.println("\n--- Criando Instrutores ---");
+        String[] nomesInstrutores = {"Prof. Dr. Ricardo Oliveira", "Ms. Sofia Albuquerque", "Esp. Tiago Mendes"};
+        String[] cpfsInstrutores = {"44455566601", "44455566602", "44455566603"};
+        for (int i = 0; i < 3; i++) {
+            Instrutor instrutor = new Instrutor();
+            instrutor.setNome(nomesInstrutores[i]);
+            instrutor.setCpf(cpfsInstrutores[i]);
+            instrutor.setSenha("instrutor" + (i + 1) + nomesInstrutores[i].split(" ")[2].toLowerCase());
+            instrutor.setDataCadastro(new Date());
+            instrutorDAO.save(instrutor);
+            instrutoresCriados.add(instrutor);
+            System.out.println("Instrutor salvo: " + instrutor.getNome() + " (ID: " + instrutor.getId() + ")");
+        }
 
-        // ===================== CURSO =====================
-        Curso curso = new Curso();
-        curso.setTitulo("Curso de Java Completo");
-        curso.setCargaHoraria(40);
-        curso.setStatus("Ativo");
+        // ===================== 3 MÓDULOS =====================
+        System.out.println("\n--- Criando Módulos ---");
+        String[] conteudosModulos = {
+                "Introdução à Programação Orientada a Objetos",
+                "Desenvolvimento Web Frontend com React",
+                "Gerenciamento Ágil de Projetos com Scrum"
+        };
+        for (int i = 0; i < 3; i++) {
+            Modulo modulo = new Modulo();
+            modulo.setConteudo(conteudosModulos[i]);
+            modulo.setCargaHoraria(8 + (i * 2)); // Ex: 8h, 10h, 12h
+            modulo.setQtdAulas(4 + i);    // Ex: 4, 5, 6 aulas
+            moduloDAO.save(modulo);
+            modulosCriados.add(modulo);
+            System.out.println("Módulo salvo: " + modulo.getConteudo() + " (ID: " + modulo.getId() + ")");
+        }
 
-        curso.getInstrutores().add(instrutor);
-        curso.getModulos().add(modulo);
-        cursoDAO.save(curso);
-        System.out.println("Curso salvo: " + curso.getId());
+        // ===================== 3 CURSOS =====================
+        System.out.println("\n--- Criando Cursos ---");
+        String[] titulosCursos = {"Fundamentos de Java", "React: Do Básico ao Avançado", "Metodologias Ágeis na Prática"};
+        String[] statusCursos = {"Ativo", "Em Breve", "Ativo"};
+        for (int i = 0; i < 3; i++) {
+            Curso curso = new Curso();
+            curso.setTitulo(titulosCursos[i]);
+            curso.setCargaHoraria(30 + (i * 10)); // Ex: 30h, 40h, 50h
+            curso.setStatus(statusCursos[i]);
+            cursoDAO.save(curso);
+            cursosCriados.add(curso);
+            System.out.println("Curso salvo: " + curso.getTitulo() + " (ID: " + curso.getId() + ")");
+        }
 
-        // ===================== MATRICULA =====================
-        Matricula matricula = new Matricula();
-        matricula.setAluno(aluno);
-        matricula.setCurso(curso);
-        matricula.setDataMatricula(new Date());
-        matricula.setAtivo(true);
-        matriculaDAO.save(matricula);
-        System.out.println("Matricula salva: " + matricula.getId());
+        // ===================== AULAS PARA CADA MÓDULO =====================
+        // Criar 2 aulas para cada um dos 3 módulos (total 6 aulas)
+        System.out.println("\n--- Criando Aulas ---");
+        String[][] titulosAulas = {
+                {"O que é POO?", "Classes e Objetos em Java"},
+                {"Introdução ao React e JSX", "Componentes e Props"},
+                {"Princípios do Manifesto Ágil", "O Framework Scrum"}
+        };
+        int aulaGlobalCounter = 1;
+        for (int i = 0; i < modulosCriados.size(); i++) {
+            Modulo modulo = modulosCriados.get(i);
+            for (int j = 0; j < 2; j++) { // 2 aulas por módulo
+                Aula aula = new Aula();
+                aula.setTitulo(titulosAulas[i][j]);
+                aula.setDuracao(String.format("00:%02d:%02d", 20 + random.nextInt(25), random.nextInt(60)));
+                aula.setOrdem(j + 1);
+                aula.setUrl("http://cursos.online/video/" + modulo.getId() + "/aula" + aulaGlobalCounter);
+                aula.setModulo(modulo);
+                aulaDAO.save(aula);
+                // aulasCriadas.add(aula); // Adicionar se precisar da lista global
+                System.out.println("Aula salva: " + aula.getTitulo() + " (ID: " + aula.getId() + ", Módulo ID: " + modulo.getId() +")");
+                aulaGlobalCounter++;
+            }
+        }
 
-        // ===================== AVALIACAO =====================
-        Avaliacao avaliacao = new Avaliacao();
-        avaliacao.setAluno(aluno);
-        avaliacao.setCurso(curso);
-        avaliacao.setNota(9.5);
-        avaliacao.setFeedback("Ótimo curso!");
-        avaliacaoDAO.save(avaliacao);
-        System.out.println("Avaliacao salva: " + avaliacao.getId());
+        // ===================== ASSOCIAÇÕES CURSO-INSTRUTOR E CURSO-MÓDULO =====================
+        System.out.println("\n--- Associando Cursos com Instrutores e Módulos ---");
+        // Vincular cada curso a um instrutor e a um módulo
+        for (int i = 0; i < cursosCriados.size(); i++) {
+            Curso curso = cursosCriados.get(i);
+            Instrutor instrutor = instrutoresCriados.get(i);
+            Modulo modulo = modulosCriados.get(i);
 
-        // ===================== CERTIFICADO =====================
-        Certificado certificado = new Certificado();
-        certificado.setAluno(aluno);
-        certificado.setCurso(curso);
-        certificado.setDataConclusao(new Date());
-        certificadoDAO.save(certificado);
-        System.out.println("Certificado salvo: " + certificado.getId());
+            cursoInstrutorDAO.save(curso.getId(), instrutor.getId());
+            System.out.println("Vinculado Curso '" + curso.getTitulo() + "' (ID " + curso.getId() + ") com Instrutor '" + instrutor.getNome() + "' (ID " + instrutor.getId() + ")");
 
-        // ===================== BUSCAS =====================
-        System.out.println("\n==== Buscando dados ====");
-        Aluno alunoBuscado = alunoDAO.findById(aluno.getId());
-        System.out.println("Aluno encontrado: " + alunoBuscado.getNome());
+            cursoModuloDAO.save(curso.getId(), modulo.getId());
+            System.out.println("Vinculado Curso '" + curso.getTitulo() + "' (ID " + curso.getId() + ") com Módulo '" + modulo.getConteudo() + "' (ID " + modulo.getId() + ")");
+        }
+        // Exemplo: Vincular um segundo módulo ao primeiro curso, se houver módulos suficientes
+        if (cursosCriados.size() > 0 && modulosCriados.size() > 1 && modulosCriados.get(0).getId() != modulosCriados.get(1).getId()) {
+            cursoModuloDAO.save(cursosCriados.get(0).getId(), modulosCriados.get(1).getId());
+            System.out.println("Vinculado Curso '" + cursosCriados.get(0).getTitulo() + "' (ID " + cursosCriados.get(0).getId() + ") com Módulo adicional '" + modulosCriados.get(1).getConteudo() + "' (ID " + modulosCriados.get(1).getId() + ")");
+        }
 
-        Curso cursoBuscado = cursoDAO.findById(curso.getId());
-        System.out.println("Curso encontrado: " + cursoBuscado.getTitulo());
 
-        List<Aula> aulasModulo = aulaDAO.findByModuloId(modulo.getId());
-        System.out.println("Aulas do módulo: " + aulasModulo.size());
+        // ===================== 3 MATRÍCULAS =====================
+        System.out.println("\n--- Criando Matrículas ---");
+        for (int i = 0; i < alunosCriados.size(); i++) {
+            Matricula matricula = new Matricula();
+            Aluno aluno = alunosCriados.get(i);
+            Curso curso = cursosCriados.get(i); // Cada aluno se matricula em um curso diferente
 
-        List<Matricula> matriculasCurso = matriculaDAO.findByCursoId(curso.getId());
-        System.out.println("Matriculas no curso: " + matriculasCurso.size());
+            matricula.setAluno(aluno);
+            matricula.setCurso(curso);
+            matricula.setDataMatricula(new Date());
+            matricula.setAtivo((i % 2 == 0)); // Alterna status ativo
+            matriculaDAO.save(matricula);
+            System.out.println("Matrícula salva: Aluno '" + aluno.getNome() + "' no Curso '" + curso.getTitulo() + "' (ID Matrícula: " + matricula.getId() + ")");
+        }
+        // Matricular o primeiro aluno em um segundo curso, se houver
+        if (alunosCriados.size() > 0 && cursosCriados.size() > 1) {
+            Matricula matriculaExtra = new Matricula();
+            matriculaExtra.setAluno(alunosCriados.get(0));
+            matriculaExtra.setCurso(cursosCriados.get(1));
+            matriculaExtra.setDataMatricula(new Date());
+            matriculaExtra.setAtivo(true);
+            matriculaDAO.save(matriculaExtra);
+            System.out.println("Matrícula extra salva: Aluno '" + alunosCriados.get(0).getNome() + "' no Curso '" + cursosCriados.get(1).getTitulo() + "' (ID Matrícula: " + matriculaExtra.getId() + ")");
+        }
 
-        // ===================== UPDATE =====================
-        System.out.println("\n==== Atualizando dados ====");
-        aluno.setNome("Maria Silva Atualizada");
-        alunoDAO.update(aluno);
-        System.out.println("Aluno atualizado!");
 
-        curso.setStatus("Inativo");
-        cursoDAO.update(curso);
-        System.out.println("Curso atualizado para inativo!");
+        // ===================== 3 AVALIAÇÕES =====================
+        System.out.println("\n--- Criando Avaliações ---");
+        String[] feedbacks = {
+                "Curso excelente, didática impecável e conteúdo muito relevante!",
+                "Gostei bastante, mas alguns tópicos poderiam ser mais aprofundados. No geral, recomendo.",
+                "Material de apoio muito bom e instrutor com ótimo conhecimento."
+        };
+        double[] notas = {9.5, 7.8, 8.9};
+        for (int i = 0; i < alunosCriados.size(); i++) {
+            Avaliacao avaliacao = new Avaliacao();
+            Aluno aluno = alunosCriados.get(i);
+            Curso curso = cursosCriados.get(i); // Aluno avalia o curso em que está matriculado
 
-        aula.setTitulo("Introdução ao Java - Atualizado");
-        aulaDAO.update(aula);
-        System.out.println("Aula atualizada!");
+            avaliacao.setAluno(aluno);
+            avaliacao.setCurso(curso);
+            avaliacao.setNota(notas[i]);
+            avaliacao.setFeedback(feedbacks[i]);
+            avaliacaoDAO.save(avaliacao);
+            System.out.println("Avaliação salva: Aluno '" + aluno.getNome() + "' para Curso '" + curso.getTitulo() + "' (Nota: " + avaliacao.getNota() + ", ID Avaliação: " + avaliacao.getId() + ")");
+        }
 
-        // ===================== DELETE =====================
-        System.out.println("\n==== Deletando dados ====");
-        aulaDAO.delete(aula.getId());
-        System.out.println("Aula deletada.");
+        // ===================== 2 CERTIFICADOS (exemplo) =====================
+        System.out.println("\n--- Criando Certificados ---");
+        // Emitir certificado para os dois primeiros alunos para os cursos que eles se matricularam
+        for (int i = 0; i < 2 && i < alunosCriados.size() && i < cursosCriados.size(); i++) {
+            Certificado certificado = new Certificado();
+            Aluno aluno = alunosCriados.get(i);
+            Curso curso = cursosCriados.get(i);
 
-        avaliacaoDAO.delete(avaliacao.getId());
-        System.out.println("Avaliacao deletada.");
+            certificado.setAluno(aluno);
+            certificado.setCurso(curso);
+            certificado.setDataConclusao(new Date()); // Data de conclusão como hoje
+            certificadoDAO.save(certificado);
+            System.out.println("Certificado salvo: Aluno '" + aluno.getNome() + "' para Curso '" + curso.getTitulo() + "' (ID Certificado: " + certificado.getId() + ")");
+        }
 
-        certificadoDAO.delete(certificado.getId());
-        System.out.println("Certificado deletado.");
-
-        matriculaDAO.delete(matricula.getId());
-        System.out.println("Matricula deletada.");
-
-        cursoDAO.delete(curso.getId());
-        System.out.println("Curso deletado.");
-
-        moduloDAO.delete(modulo.getId());
-        System.out.println("Modulo deletado.");
-
-        instrutorDAO.delete(instrutor.getId());
-        System.out.println("Instrutor deletado.");
-
-        alunoDAO.delete(aluno.getId());
-        System.out.println("Aluno deletado.");
-
-        System.out.println("\n==== FIM DOS TESTES ====");
+        System.out.println("\n==== FIM DA INSERÇÃO DE DADOS DE EXEMPLO ====");
     }
 }
-

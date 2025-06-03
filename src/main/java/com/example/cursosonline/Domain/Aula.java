@@ -11,10 +11,10 @@ public class Aula {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "url", nullable = false, length = 300)
+    @Column(name = "url", nullable = false, length = 500)
     private String url;
 
-    @Column(name = "titulo", nullable = false, length = 50)
+    @Column(name = "titulo", nullable = false, length = 100)
     private String titulo;
 
     @Column(name = "duracao", nullable = false, length = 8)

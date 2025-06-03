@@ -1,9 +1,5 @@
 // Cache global para todos os alunos
 let allAlunosCache = [];
-// Caches para sub-detalhes (se você decidir usá-los para otimizar showAlunoDetails)
-// let alunoDetailsMatriculasCache = {};
-// let alunoDetailsAvaliacoesCache = {};
-// let alunoDetailsCertificadosCache = {};
 
 document.addEventListener('DOMContentLoaded', async function() {
     try {
@@ -27,8 +23,8 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 
     // Listeners para a barra de pesquisa de alunos
-    const searchInput = document.getElementById('search-alunos-input'); // Certifique-se que este ID está no seu alunos.html
-    const searchButton = document.getElementById('search-alunos-button'); // Certifique-se que este ID está no seu alunos.html
+    const searchInput = document.getElementById('search-alunos-input');
+    const searchButton = document.getElementById('search-alunos-button');
 
     if (searchButton && searchInput) {
         searchButton.addEventListener('click', () => {

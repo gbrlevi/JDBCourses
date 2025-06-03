@@ -15,10 +15,8 @@ const API = {
 };
 
 // Function to show notifications (placeholder)
-function _internalShowNotification(message, type) { // Renamed to avoid conflict if already on window
+function _internalShowNotification(message, type) {
     console.log(`Notification (${type}): ${message}`);
-    // In a real app, you'd have a proper UI notification system here
-    // For now, we'll ensure the one from utils.js is used if available, or this fallback.
     if (typeof window.showNotification === 'function' && window.showNotification !== _internalShowNotification) {
         window.showNotification(message, type);
     }
@@ -38,7 +36,6 @@ async function fetchAPI(url, options = {}) {
         if (!response.ok) {
             let errorData = { message: `HTTP error! Status: ${response.status}` };
             try {
-                // Try to parse error response from backend if it's JSON
                 const backendError = await response.json();
                 if (backendError && backendError.message) {
                     errorData.message = backendError.message;
@@ -46,7 +43,6 @@ async function fetchAPI(url, options = {}) {
                     errorData.message = backendError;
                 }
             } catch (e) {
-                // If error response is not JSON, use the status text
                 errorData.message = `HTTP error! Status: ${response.status} - ${response.statusText}`;
             }
             throw new Error(errorData.message);
@@ -59,8 +55,8 @@ async function fetchAPI(url, options = {}) {
         return null; // For 204 No Content or non-JSON responses
     } catch (error) {
         console.error('API Error in fetchAPI:', error);
-        _internalShowNotification(error.message, 'error'); // Use internal or existing window.showNotification
-        throw error; // Re-throw for the calling function to handle UI updates
+        _internalShowNotification(error.message, 'error');
+        throw error;
     }
 }
 
@@ -111,14 +107,14 @@ async function deleteAula_internal(id) { return await _remove(API.aulas, id); }
 // --- Avaliações ---
 async function getAllAvaliacoes_internal() { return await _getAll(API.avaliacoes); }
 async function getAvaliacaoById_internal(id) { return await _getById(API.avaliacoes, id); }
-async function getAvaliacoesByAlunoId_internal(alunoId) { return await fetchAPI(`${API.avaliacoes}/aluno/${alunoId}`); } // Name matches expectation
+async function getAvaliacoesByAlunoId_internal(alunoId) { return await fetchAPI(`${API.avaliacoes}/aluno/${alunoId}`); }
 async function createAvaliacao_internal(avaliacao) { return await _create(API.avaliacoes, avaliacao); }
 async function deleteAvaliacao_internal(id) { return await _remove(API.avaliacoes, id); }
 
 // --- Certificados ---
 async function getAllCertificados_internal() { return await _getAll(API.certificados); }
 async function getCertificadoById_internal(id) { return await _getById(API.certificados, id); }
-async function getCertificadosByAlunoId_internal(alunoId) { return await fetchAPI(`${API.certificados}/aluno/${alunoId}`); } // Name matches expectation
+async function getCertificadosByAlunoId_internal(alunoId) { return await fetchAPI(`${API.certificados}/aluno/${alunoId}`); }
 async function createCertificado_internal(certificado) { return await _create(API.certificados, certificado); }
 async function deleteCertificado_internal(id) { return await _remove(API.certificados, id); }
 
@@ -139,7 +135,7 @@ async function deleteInstrutor_internal(id) { return await _remove(API.instrutor
 // --- Matrículas ---
 async function getAllMatriculas_internal() { return await _getAll(API.matriculas); }
 async function getMatriculaById_internal(id) { return await _getById(API.matriculas, id); }
-async function getMatriculasByAlunoId_internal(alunoId) { return await fetchAPI(`${API.matriculas}/aluno/${alunoId}`); } // Name matches expectation
+async function getMatriculasByAlunoId_internal(alunoId) { return await fetchAPI(`${API.matriculas}/aluno/${alunoId}`); }
 async function getMatriculasByCursoId_internal(cursoId) { return await fetchAPI(`${API.matriculas}/curso/${cursoId}`); }
 async function createMatricula_internal(matricula) { return await _create(API.matriculas, matricula); }
 async function updateMatricula_internal(id, matricula) { return await _update(API.matriculas, id, matricula); }
@@ -156,19 +152,17 @@ async function deleteModulo_internal(id) { return await _remove(API.modulos, id)
 // Curso-Instrutor
 async function vincularInstrutorCurso_internal(cursoId, instrutorId) { return await fetchAPI(`${API.relationships}/curso/${cursoId}/instrutor/${instrutorId}`, { method: 'POST' }); }
 async function removerVinculoInstrutorCurso_internal(cursoId, instrutorId) { return await fetchAPI(`${API.relationships}/curso/${cursoId}/instrutor/${instrutorId}`, { method: 'DELETE' }); }
-async function getInstrutoresByCursoId_internal(cursoId) { return await fetchAPI(`${API.relationships}/curso/${cursoId}/instrutores`); } // Name matches expectation
-async function getCursosByInstrutorId_internal(instrutorId) { return await fetchAPI(`${API.relationships}/instrutor/${instrutorId}/cursos`); } // Name matches expectation
+async function getInstrutoresByCursoId_internal(cursoId) { return await fetchAPI(`${API.relationships}/curso/${cursoId}/instrutores`); }
+async function getCursosByInstrutorId_internal(instrutorId) { return await fetchAPI(`${API.relationships}/instrutor/${instrutorId}/cursos`); }
 
 // Curso-Módulo
 async function vincularModuloCurso_internal(cursoId, moduloId) { return await fetchAPI(`${API.relationships}/curso/${cursoId}/modulo/${moduloId}`, { method: 'POST' }); }
 async function removerVinculoModuloCurso_internal(cursoId, moduloId) { return await fetchAPI(`${API.relationships}/curso/${cursoId}/modulo/${moduloId}`, { method: 'DELETE' }); }
-async function getModulosByCursoId_internal(cursoId) { return await fetchAPI(`${API.relationships}/curso/${cursoId}/modulos`); } // Name matches expectation
-async function getCursosByModuloId_internal(moduloId) { return await fetchAPI(`${API.relationships}/modulo/${moduloId}/cursos`); } // Name matches expectation
+async function getModulosByCursoId_internal(cursoId) { return await fetchAPI(`${API.relationships}/curso/${cursoId}/modulos`); }
+async function getCursosByModuloId_internal(moduloId) { return await fetchAPI(`${API.relationships}/modulo/${moduloId}/cursos`); }
 
 
 // --- Expose functions to the global window object ---
-// This makes them callable as window.functionName() or just functionName() in other scripts like alunos.js,
-// provided api.js is loaded before them.
 
 // Alunos
 window.getAllAlunos = getAllAlunos_internal;
@@ -180,7 +174,7 @@ window.deleteAluno = deleteAluno_internal;
 // Aulas
 window.getAllAulas = getAllAulas_internal;
 window.getAulaById = getAulaById_internal;
-window.getAulasByModuloId = getAulasByModuloId_internal; // Exposed with 'Id'
+window.getAulasByModuloId = getAulasByModuloId_internal;
 window.createAula = createAula_internal;
 window.updateAula = updateAula_internal;
 window.deleteAula = deleteAula_internal;
@@ -188,14 +182,14 @@ window.deleteAula = deleteAula_internal;
 // Avaliações
 window.getAllAvaliacoes = getAllAvaliacoes_internal;
 window.getAvaliacaoById = getAvaliacaoById_internal;
-window.getAvaliacoesByAlunoId = getAvaliacoesByAlunoId_internal; // Exposed with 'Id'
+window.getAvaliacoesByAlunoId = getAvaliacoesByAlunoId_internal;
 window.createAvaliacao = createAvaliacao_internal;
 window.deleteAvaliacao = deleteAvaliacao_internal;
 
 // Certificados
 window.getAllCertificados = getAllCertificados_internal;
 window.getCertificadoById = getCertificadoById_internal;
-window.getCertificadosByAlunoId = getCertificadosByAlunoId_internal; // Exposed with 'Id'
+window.getCertificadosByAlunoId = getCertificadosByAlunoId_internal;
 window.createCertificado = createCertificado_internal;
 window.deleteCertificado = deleteCertificado_internal;
 
@@ -216,8 +210,8 @@ window.deleteInstrutor = deleteInstrutor_internal;
 // Matrículas
 window.getAllMatriculas = getAllMatriculas_internal;
 window.getMatriculaById = getMatriculaById_internal;
-window.getMatriculasByAlunoId = getMatriculasByAlunoId_internal; // Exposed with 'Id'
-window.getMatriculasByCursoId = getMatriculasByCursoId_internal; // Exposed with 'Id'
+window.getMatriculasByAlunoId = getMatriculasByAlunoId_internal;
+window.getMatriculasByCursoId = getMatriculasByCursoId_internal;
 window.createMatricula = createMatricula_internal;
 window.updateMatricula = updateMatricula_internal;
 window.deleteMatricula = deleteMatricula_internal;
@@ -232,10 +226,10 @@ window.deleteModulo = deleteModulo_internal;
 // Relationships
 window.vincularInstrutorCurso = vincularInstrutorCurso_internal;
 window.removerVinculoInstrutorCurso = removerVinculoInstrutorCurso_internal;
-window.getInstrutoresByCursoId = getInstrutoresByCursoId_internal; // Exposed with 'Id'
-window.getCursosByInstrutorId = getCursosByInstrutorId_internal; // Exposed with 'Id'
+window.getInstrutoresByCursoId = getInstrutoresByCursoId_internal;
+window.getCursosByInstrutorId = getCursosByInstrutorId_internal;
 
 window.vincularModuloCurso = vincularModuloCurso_internal;
 window.removerVinculoModuloCurso = removerVinculoModuloCurso_internal;
-window.getModulosByCursoId = getModulosByCursoId_internal; // Exposed with 'Id'
-window.getCursosByModuloId = getCursosByModuloId_internal; // Exposed with 'Id'
+window.getModulosByCursoId = getModulosByCursoId_internal;
+window.getCursosByModuloId = getCursosByModuloId_internal;
