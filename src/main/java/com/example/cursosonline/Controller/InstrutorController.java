@@ -59,6 +59,7 @@ public class InstrutorController {
             Instrutor existingInstrutor = instrutorDAO.findById(id);
             if (existingInstrutor != null) {
                 instrutor.setId(id);
+                instrutor.setDataCadastro(existingInstrutor.getDataCadastro());
                 instrutorDAO.update(instrutor);
                 return new ResponseEntity<>(instrutor, HttpStatus.OK);
             } else {

@@ -61,7 +61,7 @@ public class AlunoController {
             if (existingAluno != null) {
                 aluno.setId(id);
                 try {
-                    aluno.setDataCadastro(new Date());
+                    aluno.setDataCadastro(existingAluno.getDataCadastro());
                     alunoDAO.update(aluno);
                     return new ResponseEntity<>(aluno, HttpStatus.CREATED);
                 } catch (Exception e) {
