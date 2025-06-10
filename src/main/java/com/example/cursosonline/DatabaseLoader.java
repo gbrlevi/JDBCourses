@@ -31,7 +31,6 @@ public class DatabaseLoader {
         List<Instrutor> instrutoresCriados = new ArrayList<>();
         List<Modulo> modulosCriados = new ArrayList<>();
         List<Curso> cursosCriados = new ArrayList<>();
-        // List<Aula> aulasCriadas = new ArrayList<>(); // Menos crucial ter a lista global de aulas aqui
 
         // ===================== 3 ALUNOS =====================
         System.out.println("\n--- Criando Alunos ---");
@@ -73,8 +72,8 @@ public class DatabaseLoader {
         for (int i = 0; i < 3; i++) {
             Modulo modulo = new Modulo();
             modulo.setConteudo(conteudosModulos[i]);
-            modulo.setCargaHoraria(8 + (i * 2)); // Ex: 8h, 10h, 12h
-            modulo.setQtdAulas(4 + i);    // Ex: 4, 5, 6 aulas
+            modulo.setCargaHoraria(8 + (i * 2));
+            modulo.setQtdAulas(4 + i);
             moduloDAO.save(modulo);
             modulosCriados.add(modulo);
             System.out.println("Módulo salvo: " + modulo.getConteudo() + " (ID: " + modulo.getId() + ")");
@@ -87,7 +86,7 @@ public class DatabaseLoader {
         for (int i = 0; i < 3; i++) {
             Curso curso = new Curso();
             curso.setTitulo(titulosCursos[i]);
-            curso.setCargaHoraria(30 + (i * 10)); // Ex: 30h, 40h, 50h
+            curso.setCargaHoraria(30 + (i * 10));
             curso.setStatus(statusCursos[i]);
             cursoDAO.save(curso);
             cursosCriados.add(curso);
@@ -113,7 +112,6 @@ public class DatabaseLoader {
                 aula.setUrl("http://cursos.online/video/" + modulo.getId() + "/aula" + aulaGlobalCounter);
                 aula.setModulo(modulo);
                 aulaDAO.save(aula);
-                // aulasCriadas.add(aula); // Adicionar se precisar da lista global
                 System.out.println("Aula salva: " + aula.getTitulo() + " (ID: " + aula.getId() + ", Módulo ID: " + modulo.getId() +")");
                 aulaGlobalCounter++;
             }
@@ -133,7 +131,6 @@ public class DatabaseLoader {
             cursoModuloDAO.save(curso.getId(), modulo.getId());
             System.out.println("Vinculado Curso '" + curso.getTitulo() + "' (ID " + curso.getId() + ") com Módulo '" + modulo.getConteudo() + "' (ID " + modulo.getId() + ")");
         }
-        // Exemplo: Vincular um segundo módulo ao primeiro curso, se houver módulos suficientes
         if (cursosCriados.size() > 0 && modulosCriados.size() > 1 && modulosCriados.get(0).getId() != modulosCriados.get(1).getId()) {
             cursoModuloDAO.save(cursosCriados.get(0).getId(), modulosCriados.get(1).getId());
             System.out.println("Vinculado Curso '" + cursosCriados.get(0).getTitulo() + "' (ID " + cursosCriados.get(0).getId() + ") com Módulo adicional '" + modulosCriados.get(1).getConteudo() + "' (ID " + modulosCriados.get(1).getId() + ")");
@@ -145,16 +142,15 @@ public class DatabaseLoader {
         for (int i = 0; i < alunosCriados.size(); i++) {
             Matricula matricula = new Matricula();
             Aluno aluno = alunosCriados.get(i);
-            Curso curso = cursosCriados.get(i); // Cada aluno se matricula em um curso diferente
+            Curso curso = cursosCriados.get(i);
 
             matricula.setAluno(aluno);
             matricula.setCurso(curso);
             matricula.setDataMatricula(new Date());
-            matricula.setAtivo((i % 2 == 0)); // Alterna status ativo
+            matricula.setAtivo((i % 2 == 0));
             matriculaDAO.save(matricula);
             System.out.println("Matrícula salva: Aluno '" + aluno.getNome() + "' no Curso '" + curso.getTitulo() + "' (ID Matrícula: " + matricula.getId() + ")");
         }
-        // Matricular o primeiro aluno em um segundo curso, se houver
         if (alunosCriados.size() > 0 && cursosCriados.size() > 1) {
             Matricula matriculaExtra = new Matricula();
             matriculaExtra.setAluno(alunosCriados.get(0));
@@ -177,7 +173,7 @@ public class DatabaseLoader {
         for (int i = 0; i < alunosCriados.size(); i++) {
             Avaliacao avaliacao = new Avaliacao();
             Aluno aluno = alunosCriados.get(i);
-            Curso curso = cursosCriados.get(i); // Aluno avalia o curso em que está matriculado
+            Curso curso = cursosCriados.get(i);
 
             avaliacao.setAluno(aluno);
             avaliacao.setCurso(curso);
@@ -189,7 +185,6 @@ public class DatabaseLoader {
 
         // ===================== 2 CERTIFICADOS (exemplo) =====================
         System.out.println("\n--- Criando Certificados ---");
-        // Emitir certificado para os dois primeiros alunos para os cursos que eles se matricularam
         for (int i = 0; i < 2 && i < alunosCriados.size() && i < cursosCriados.size(); i++) {
             Certificado certificado = new Certificado();
             Aluno aluno = alunosCriados.get(i);
@@ -197,7 +192,7 @@ public class DatabaseLoader {
 
             certificado.setAluno(aluno);
             certificado.setCurso(curso);
-            certificado.setDataConclusao(new Date()); // Data de conclusão como hoje
+            certificado.setDataConclusao(new Date());
             certificadoDAO.save(certificado);
             System.out.println("Certificado salvo: Aluno '" + aluno.getNome() + "' para Curso '" + curso.getTitulo() + "' (ID Certificado: " + certificado.getId() + ")");
         }

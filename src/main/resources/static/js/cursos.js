@@ -105,25 +105,32 @@ async function loadCursos(searchTerm = '') { // Modificado para aceitar searchTe
 
 function attachCursoActionListeners() {
     document.querySelectorAll('.view-curso').forEach(button => {
-        button.addEventListener('click', function() {
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        newButton.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
             showCursoDetails(id);
         });
     });
 
     document.querySelectorAll('.edit-curso').forEach(button => {
-        button.addEventListener('click', function() {
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        newButton.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
             showCursoForm(id);
         });
     });
 
     document.querySelectorAll('.delete-curso').forEach(button => {
-        button.addEventListener('click', function() {
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        newButton.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
             window.confirmDelete('curso', id, async () => { // confirmDelete from utils.js
                 await window.deleteCurso(id); // deleteCurso from api.js
-                await loadCursos(); // Refresh list
+                allCursosCache = []; // CORREÇÃO: Invalida o cache
+                await loadCursos(); // Recarrega a lista do zero
             });
         });
     });
@@ -159,7 +166,6 @@ async function showCursoDetails(cursoId) {
         const btnAddInstrutor = document.getElementById('btn-add-instrutor');
         if (btnAddInstrutor) {
             btnAddInstrutor.setAttribute('data-curso-id', cursoId);
-            // Remove previous listener to avoid multiple attachments if any
             const newBtnAddInstrutor = btnAddInstrutor.cloneNode(true);
             btnAddInstrutor.parentNode.replaceChild(newBtnAddInstrutor, btnAddInstrutor);
             newBtnAddInstrutor.addEventListener('click', () => showAddInstrutorToCursoForm(cursoId));
@@ -192,8 +198,6 @@ async function loadInstrutoresByCurso(cursoId) {
     tbody.innerHTML = '<tr><td colspan="4">Carregando instrutores...</td></tr>';
 
     try {
-        // RelationshipController returns List<Long> for instrutor IDs.
-        // We need to fetch each instrutor's details.
         const instrutorIds = await window.getInstrutoresByCursoId(cursoId); // from api.js
 
         tbody.innerHTML = '';
@@ -205,8 +209,6 @@ async function loadInstrutoresByCurso(cursoId) {
         for (const instrutorId of instrutorIds) {
             try {
                 const instrutor = await window.getInstrutorById(instrutorId); // from api.js
-                // Instrutor.java: id, nome, cpf, senha, dataCadastro
-                // HTML table: ID, Nome, Email (changed to CPF), Ações
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${instrutor.id}</td>
@@ -235,14 +237,13 @@ async function loadInstrutoresByCurso(cursoId) {
 
 function attachInstrutorCursoActionListeners(currentCursoId) {
     document.querySelectorAll('.remove-instrutor-from-curso').forEach(button => {
-        // Remove old listener before adding new one to prevent multiple calls
         const newButton = button.cloneNode(true);
         button.parentNode.replaceChild(newButton, button);
 
         newButton.addEventListener('click', async function() {
             const cursoId = this.getAttribute('data-curso-id');
             const instrutorId = this.getAttribute('data-instrutor-id');
-            window.confirmDelete(`vínculo do instrutor ID ${instrutorId} com este curso`, null, async () => { // id for confirmDelete is null as we use specific params
+            window.confirmDelete(`vínculo do instrutor ID ${instrutorId} com este curso`, null, async () => {
                 await window.removerVinculoInstrutorCurso(cursoId, instrutorId); // from api.js
                 window.showNotification('Vínculo com instrutor removido.', 'success');
                 await loadInstrutoresByCurso(cursoId); // Refresh instrutores list
@@ -258,7 +259,6 @@ async function loadModulosByCurso(cursoId) {
     tbody.innerHTML = '<tr><td colspan="4">Carregando módulos...</td></tr>';
 
     try {
-        // RelationshipController returns List<Long> for modulo IDs.
         const moduloIds = await window.getModulosByCursoId(cursoId); // from api.js
 
         tbody.innerHTML = '';
@@ -270,8 +270,6 @@ async function loadModulosByCurso(cursoId) {
         for (const moduloId of moduloIds) {
             try {
                 const modulo = await window.getModuloById(moduloId); // from api.js
-                // Modulo.java: id, conteudo, cargaHoraria, qtdAulas
-                // HTML table: ID, Nome, Descrição, Ações
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${modulo.id}</td>
@@ -331,7 +329,6 @@ async function loadMatriculasByCurso(cursoId) {
 
         for (const matricula of matriculas) {
             let alunoNome = 'Carregando...';
-            // Matricula.java has aluno object which has id.
             if (matricula.aluno && matricula.aluno.id) {
                 try {
                     const aluno = await window.getAlunoById(matricula.aluno.id); // from api.js
@@ -399,7 +396,6 @@ async function showCursoForm(id = null) {
         { name: 'titulo', label: 'Título do Curso', type: 'text', value: curso.titulo, required: true },
         { name: 'cargaHoraria', label: 'Carga Horária (horas)', type: 'number', value: curso.cargaHoraria, required: true, attributes: { min: "1" } },
         { name: 'status', label: 'Status', type: 'text', value: curso.status, required: true, placeholder: "Ex: Ativo, Em Breve, Inativo" }
-        // Consider using a <select> for status if you have predefined values
     ];
 
     let formHtml = `<form id="curso-dynamic-form" class="entity-form">`;
@@ -431,20 +427,22 @@ async function showCursoForm(id = null) {
             const formData = new FormData(this);
             const data = Object.fromEntries(formData.entries());
 
-            // Convert cargaHoraria to number if it's not already
             if (data.cargaHoraria) {
                 data.cargaHoraria = parseInt(data.cargaHoraria, 10);
             }
 
             try {
                 if (isEditMode) {
-                    await window.updateCurso(id, data); // from api.js
+                    await window.updateCurso(id, data);
                 } else {
-                    await window.createCurso(data); // from api.js
+                    await window.createCurso(data);
                 }
                 window.showNotification(`Curso ${isEditMode ? 'atualizado' : 'criado'} com sucesso!`, 'success');
                 document.getElementById('modal').style.display = 'none';
-                await loadCursos();
+
+                allCursosCache = []; // CORREÇÃO: Invalida o cache
+                await loadCursos(); // Recarrega a lista do zero
+
             } catch (error) {
                 console.error(`Erro ao ${isEditMode ? 'atualizar' : 'criar'} curso:`, error);
                 window.showNotification(error.message || `Erro ao ${isEditMode ? 'atualizar' : 'criar'} curso.`, 'error');
@@ -458,7 +456,6 @@ async function showAddInstrutorToCursoForm(cursoId) {
         const allInstrutores = await window.getAllInstrutores(); // from api.js
         const cursoInstrutorIds = await window.getInstrutoresByCursoId(cursoId); // Get IDs already linked
 
-        // Filter out instrutores already linked to this course
         const availableInstrutores = allInstrutores.filter(instrutor => !cursoInstrutorIds.includes(instrutor.id));
 
         if (availableInstrutores.length === 0) {
@@ -475,7 +472,6 @@ async function showAddInstrutorToCursoForm(cursoId) {
             { name: 'instrutorId', label: 'Selecione o Instrutor', type: 'select', options, required: true }
         ];
 
-        // Using manual form HTML generation as createForm might be too generic for this specific need
         let formHtml = `<form id="add-instrutor-to-curso-form" class="entity-form">`;
         fields.forEach(field => {
             formHtml += `<div class="form-group"><label for="${field.name}">${field.label}</label><select id="${field.name}" name="${field.name}" class="form-control" required>`;
@@ -495,7 +491,7 @@ async function showAddInstrutorToCursoForm(cursoId) {
                 const formData = new FormData(this);
                 const instrutorId = formData.get('instrutorId');
                 try {
-                    await window.vincularInstrutorCurso(cursoId, instrutorId); // from api.js
+                    await window.vincularInstrutorCurso(cursoId, instrutorId);
                     window.showNotification('Instrutor vinculado ao curso com sucesso!', 'success');
                     document.getElementById('modal').style.display = 'none';
                     await loadInstrutoresByCurso(cursoId);
@@ -552,7 +548,7 @@ async function showAddModuloToCursoForm(cursoId) {
                 const formData = new FormData(this);
                 const moduloId = formData.get('moduloId');
                 try {
-                    await window.vincularModuloCurso(cursoId, moduloId); // from api.js
+                    await window.vincularModuloCurso(cursoId, moduloId);
                     window.showNotification('Módulo vinculado ao curso com sucesso!', 'success');
                     document.getElementById('modal').style.display = 'none';
                     await loadModulosByCurso(cursoId);

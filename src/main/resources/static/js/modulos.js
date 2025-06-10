@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
-async function loadModulos(searchTerm = '') { // Modificado para aceitar searchTerm
+async function loadModulos(searchTerm = '') {
     const tbody = document.querySelector('#modulos-table tbody');
     if (!tbody) {
         console.error('Módulos table body not found!');
@@ -60,12 +60,11 @@ async function loadModulos(searchTerm = '') { // Modificado para aceitar searchT
         if (searchTerm) {
             const lowerSearchTerm = searchTerm.toLowerCase();
             modulosToDisplay = allModulosCache.filter(modulo =>
-                    (modulo.conteudo && modulo.conteudo.toLowerCase().includes(lowerSearchTerm))
-                // O campo 'conteudo' do Modulo.java é usado como nome.
+                (modulo.conteudo && modulo.conteudo.toLowerCase().includes(lowerSearchTerm))
             );
         }
 
-        tbody.innerHTML = ''; // Limpar
+        tbody.innerHTML = '';
 
         if (!modulosToDisplay || modulosToDisplay.length === 0) {
             tbody.innerHTML = `<tr><td colspan="4">${searchTerm ? 'Nenhum módulo encontrado com o termo "' + searchTerm + '".' : 'Nenhum módulo encontrado.'}</td></tr>`;
@@ -93,7 +92,7 @@ async function loadModulos(searchTerm = '') { // Modificado para aceitar searchT
             tbody.appendChild(tr);
         });
 
-        attachModuloActionListeners(); // Re-anexa listeners
+        attachModuloActionListeners();
     } catch (error) {
         console.error('Error loading módulos:', error);
         tbody.innerHTML = '<tr><td colspan="4">Erro ao carregar módulos.</td></tr>';
@@ -104,25 +103,32 @@ async function loadModulos(searchTerm = '') { // Modificado para aceitar searchT
 
 function attachModuloActionListeners() {
     document.querySelectorAll('.view-modulo').forEach(button => {
-        button.addEventListener('click', function() {
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        newButton.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
             showModuloDetails(id);
         });
     });
 
     document.querySelectorAll('.edit-modulo').forEach(button => {
-        button.addEventListener('click', function() {
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        newButton.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
             showModuloForm(id);
         });
     });
 
     document.querySelectorAll('.delete-modulo').forEach(button => {
-        button.addEventListener('click', function() {
+        const newButton = button.cloneNode(true);
+        button.parentNode.replaceChild(newButton, button);
+        newButton.addEventListener('click', function() {
             const id = this.getAttribute('data-id');
-            window.confirmDelete('módulo', id, async () => { // confirmDelete from utils.js
-                await window.deleteModulo(id); // deleteModulo from api.js
-                await loadModulos(); // Refresh list
+            window.confirmDelete('módulo', id, async () => {
+                await window.deleteModulo(id);
+                allModulosCache = []; // CORREÇÃO: Invalida o cache
+                await loadModulos(); // Recarrega a lista do zero
             });
         });
     });
@@ -138,13 +144,12 @@ async function showModuloDetails(moduloId) {
     }
 
     try {
-        const modulo = await window.getModuloById(moduloId); // from api.js
+        const modulo = await window.getModuloById(moduloId);
         if (!modulo) {
             window.showNotification('Módulo não encontrado.', 'error');
             return;
         }
 
-        // Modulo.java fields: id, conteudo, cargaHoraria, qtdAulas
         moduloInfoDiv.innerHTML = `
             <div class="form-group"><label>ID:</label><p>${modulo.id}</p></div>
             <div class="form-group"><label>Conteúdo (Nome):</label><p>${modulo.conteudo || 'N/A'}</p></div>
@@ -154,17 +159,14 @@ async function showModuloDetails(moduloId) {
 
         detailsPanel.style.display = 'block';
 
-        // Setup "Add Aula" button
         const btnAddAula = document.getElementById('btn-add-aula');
         if (btnAddAula) {
             btnAddAula.setAttribute('data-modulo-id', moduloId);
-            // Remove previous listener to avoid multiple attachments
             const newBtnAddAula = btnAddAula.cloneNode(true);
             btnAddAula.parentNode.replaceChild(newBtnAddAula, btnAddAula);
-            newBtnAddAula.addEventListener('click', () => showAulaForm(null, moduloId)); // null for aulaId means new aula
+            newBtnAddAula.addEventListener('click', () => showAulaForm(null, moduloId));
         }
 
-        // Load related data
         await loadAulasByModulo(moduloId);
         await loadCursosByModulo(moduloId);
 
@@ -178,10 +180,10 @@ async function showModuloDetails(moduloId) {
 async function loadAulasByModulo(moduloId) {
     const tbody = document.querySelector('#aulas-table tbody');
     if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="3">Carregando aulas...</td></tr>'; // ID, Título, Ações
+    tbody.innerHTML = '<tr><td colspan="3">Carregando aulas...</td></tr>';
 
     try {
-        const aulas = await window.getAulasByModuloId(moduloId); // from api.js
+        const aulas = await window.getAulasByModuloId(moduloId);
         tbody.innerHTML = '';
 
         if (!aulas || aulas.length === 0) {
@@ -190,8 +192,6 @@ async function loadAulasByModulo(moduloId) {
         }
 
         aulas.forEach(aula => {
-            // Aula.java: id, url, titulo, duracao, ordem
-            // HTML table: ID, Título, Ações
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td>${aula.id}</td>
@@ -230,10 +230,10 @@ function attachAulaActionListeners(currentModuloId) {
         button.parentNode.replaceChild(newButton, button);
         newButton.addEventListener('click', function() {
             const aulaId = this.getAttribute('data-aula-id');
-            const moduloId = this.getAttribute('data-modulo-id'); // To refresh the correct list
+            const moduloId = this.getAttribute('data-modulo-id');
             window.confirmDelete('aula', aulaId, async () => {
-                await window.deleteAula(aulaId); // from api.js
-                await loadAulasByModulo(moduloId); // Refresh
+                await window.deleteAula(aulaId);
+                await loadAulasByModulo(moduloId);
             });
         });
     });
@@ -242,11 +242,10 @@ function attachAulaActionListeners(currentModuloId) {
 async function loadCursosByModulo(moduloId) {
     const tbody = document.querySelector('#cursos-table tbody');
     if (!tbody) return;
-    tbody.innerHTML = '<tr><td colspan="3">Carregando cursos vinculados...</td></tr>'; // ID, Nome, Descrição
+    tbody.innerHTML = '<tr><td colspan="3">Carregando cursos vinculados...</td></tr>';
 
     try {
-        // RelationshipController returns List<Long> for curso IDs.
-        const cursoIds = await window.getCursosByModuloId(moduloId); // from api.js
+        const cursoIds = await window.getCursosByModuloId(moduloId);
         tbody.innerHTML = '';
 
         if (!cursoIds || cursoIds.length === 0) {
@@ -256,9 +255,7 @@ async function loadCursosByModulo(moduloId) {
 
         for (const cursoId of cursoIds) {
             try {
-                const curso = await window.getCursoById(cursoId); // from api.js
-                // Curso.java: id, titulo, cargaHoraria, status
-                // HTML table: ID, Nome, Descrição
+                const curso = await window.getCursoById(cursoId);
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${curso.id}</td>
@@ -280,7 +277,6 @@ async function loadCursosByModulo(moduloId) {
 }
 
 async function showModuloForm(id = null) {
-    // Modulo.java fields: id, conteudo, cargaHoraria, qtdAulas
     let modulo = { id: '', conteudo: '', cargaHoraria: '', qtdAulas: '' };
     let formTitle = 'Novo Módulo';
     let isEditMode = id !== null;
@@ -320,7 +316,7 @@ async function showModuloForm(id = null) {
     });
     formHtml += `<div class="form-group"><button type="submit" class="btn btn-primary">${isEditMode ? 'Atualizar' : 'Criar'} Módulo</button></div></form>`;
 
-    window.openModal(formTitle, formHtml); // openModal from utils.js
+    window.openModal(formTitle, formHtml);
 
     const dynamicForm = document.querySelector('#modulo-dynamic-form');
     if (dynamicForm) {
@@ -334,13 +330,16 @@ async function showModuloForm(id = null) {
 
             try {
                 if (isEditMode) {
-                    await window.updateModulo(id, data); // from api.js
+                    await window.updateModulo(id, data);
                 } else {
-                    await window.createModulo(data); // from api.js
+                    await window.createModulo(data);
                 }
                 window.showNotification(`Módulo ${isEditMode ? 'atualizado' : 'criado'} com sucesso!`, 'success');
                 document.getElementById('modal').style.display = 'none';
-                await loadModulos();
+
+                allModulosCache = []; // CORREÇÃO: Invalida o cache
+                await loadModulos(); // Recarrega a lista do zero
+
             } catch (error) {
                 console.error(`Erro ao ${isEditMode ? 'atualizar' : 'criar'} módulo:`, error);
                 window.showNotification(error.message || `Erro ao ${isEditMode ? 'atualizar' : 'criar'} módulo.`, 'error');
@@ -350,7 +349,6 @@ async function showModuloForm(id = null) {
 }
 
 async function showAulaForm(aulaId = null, currentModuloId) {
-    // Aula.java: id, url, titulo, duracao, ordem, modulo (for creation, moduloId is key)
     let aula = { id: '', titulo: '', url: '', duracao: '', ordem: '', moduloId: currentModuloId };
     let formTitle = 'Nova Aula para o Módulo ID: ' + currentModuloId;
     let isEditMode = aulaId !== null;
@@ -358,8 +356,7 @@ async function showAulaForm(aulaId = null, currentModuloId) {
     if (isEditMode) {
         formTitle = `Editar Aula ID: ${aulaId}`;
         try {
-            const fetchedAula = await window.getAulaById(aulaId); // from api.js
-            // Ensure moduloId from fetchedAula is used if available, otherwise stick to currentModuloId
+            const fetchedAula = await window.getAulaById(aulaId);
             aula = { ...fetchedAula, moduloId: (fetchedAula.modulo && fetchedAula.modulo.id) || fetchedAula.moduloId || currentModuloId };
         } catch (error) {
             window.showNotification('Erro ao carregar dados da aula para edição.', 'error');
@@ -372,7 +369,7 @@ async function showAulaForm(aulaId = null, currentModuloId) {
         { name: 'url', label: 'URL do Vídeo/Conteúdo', type: 'text', value: aula.url, required: true, placeholder:"https://example.com/video" },
         { name: 'duracao', label: 'Duração (HH:MM:SS)', type: 'text', value: aula.duracao, required: true, placeholder:"00:15:30" },
         { name: 'ordem', label: 'Ordem de Exibição', type: 'number', value: aula.ordem, required: true, attributes: { min: "1" } },
-        { name: 'moduloId', type: 'hidden', value: aula.moduloId } // Ensure moduloId is part of the form data
+        { name: 'moduloId', type: 'hidden', value: aula.moduloId }
     ];
 
     let formHtml = `<form id="aula-dynamic-form" class="entity-form">`;
@@ -405,27 +402,22 @@ async function showAulaForm(aulaId = null, currentModuloId) {
             const formData = new FormData(this);
             const data = Object.fromEntries(formData.entries());
 
-            // Ensure 'ordem' is an integer
             if(data.ordem) data.ordem = parseInt(data.ordem, 10);
-            // The 'moduloId' is already in 'data' from the hidden input.
-            // For creation, the backend AulaController needs a payload that can be mapped to Aula,
-            // which includes a way to link to the Modulo. Sending moduloId is typical.
-            // The backend should handle creating the Modulo object reference: e.g. data.modulo = { id: data.moduloId }
+
             const payload = { ...data };
-            if (payload.moduloId && !payload.modulo) { // Prepare payload for backend if it expects nested object
+            if (payload.moduloId && !payload.modulo) {
                 payload.modulo = { id: parseInt(payload.moduloId, 10) };
             }
 
-
             try {
                 if (isEditMode) {
-                    await window.updateAula(aulaId, payload); // from api.js
+                    await window.updateAula(aulaId, payload);
                 } else {
-                    await window.createAula(payload); // from api.js
+                    await window.createAula(payload);
                 }
                 window.showNotification(`Aula ${isEditMode ? 'atualizada' : 'criada'} com sucesso!`, 'success');
                 document.getElementById('modal').style.display = 'none';
-                await loadAulasByModulo(currentModuloId); // Refresh the aulas list for the current modulo
+                await loadAulasByModulo(currentModuloId);
             } catch (error) {
                 console.error(`Erro ao ${isEditMode ? 'atualizar' : 'criar'} aula:`, error);
                 window.showNotification(error.message || `Erro ao ${isEditMode ? 'atualizar' : 'criar'} aula.`, 'error');

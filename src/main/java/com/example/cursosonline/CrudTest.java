@@ -15,7 +15,7 @@ public class CrudTest {
 
         System.out.println("--- INICIANDO TESTES CRUD PARA ALUNO ---");
 
-        // --- 1. CREATE (Criar Aluno) ---
+        // --- 1. CREATE  ---
         System.out.println("\n--- Testando CREATE ---");
         Aluno novoAluno = new Aluno();
         String cpfUnico = "000111222" + String.format("%02d", random.nextInt(100));
@@ -32,7 +32,7 @@ public class CrudTest {
             return;
         }
 
-        // --- 2. READ (Ler Aluno) ---
+        // --- 2. READ  ---
         // 2.1. Buscar por ID
         System.out.println("\n--- Testando READ (findById) ---");
         Aluno alunoBuscado = alunoDAO.findById(novoAluno.getId());
@@ -54,7 +54,7 @@ public class CrudTest {
             System.out.println("Nenhum aluno encontrado ou lista vazia.");
         }
 
-        // --- 3. UPDATE (Atualizar Aluno) ---
+        // --- 3. UPDATE  ---
         System.out.println("\n--- Testando UPDATE ---");
         if (alunoBuscado != null) {
             String nomeAntigo = alunoBuscado.getNome();
@@ -74,7 +74,7 @@ public class CrudTest {
             System.out.println("Não foi possível testar o UPDATE pois o alunoBuscado é nulo.");
         }
 
-        // --- 4. DELETE (Deletar Aluno) ---
+        // --- 4. DELETE  ---
         System.out.println("\n--- Testando DELETE ---");
         if (novoAluno.getId() != null) {
             Long idParaDeletar = novoAluno.getId();
