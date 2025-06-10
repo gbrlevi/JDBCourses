@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS Curso(
 
 CREATE TABLE IF NOT EXISTS Modulo(
     id INT AUTO_INCREMENT PRIMARY KEY,
-    conteudo VARCHAR(100) NOT NULL, -- Aumentei para 100 para nomes mais descritivos
+    conteudo VARCHAR(100) NOT NULL,
     carga_horaria INT NOT NULL,
     qtd_aulas INT NOT NULL
 );
